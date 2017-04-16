@@ -39,13 +39,10 @@ class OrderStringParser {
 
         assert (isBuyOrderCode(type) ^ isSellOrderCode(type));
 
-        if (isBuyOrderCode(type)) {
-            return factory.buy(amount, price);
-        }
-        return factory.sell(amount, price);
+        return isBuyOrderCode(type) ? factory.buy(amount, price) : factory.sell(amount, price);
     }
 
-    private void validate(String s) throws OrderFormatException {
+    private void validate(String s) {
         if (!orderPattern.matcher(requireNonNull(s)).matches())
             throw new OrderFormatException(s);
     }
