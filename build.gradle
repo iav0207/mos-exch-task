@@ -4,6 +4,19 @@ version '1.0-SNAPSHOT'
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Discrete Auction Jar File',
+                'Implementation-Version': version,
+                'Main-Class': 'DiscreteAuction'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
 
 repositories {
     mavenCentral()
