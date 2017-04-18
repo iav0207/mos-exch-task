@@ -67,13 +67,13 @@ class OrderFactory {
     }
 
     private static void validate(Integer amount) {
-        requireNonNull(amount);
+        requireNonNull(amount, "Order amount should not be null.");
         if (amount < MIN_ORDER_AMOUNT || MAX_ORDER_AMOUNT < amount)
             throw new OrderValueException(amount);
     }
 
     private static void validate(BigDecimal price) {
-        requireNonNull(price);
+        requireNonNull(price, "Order price should not be null.");
         if (less(price, MIN_PRICE) || less(MAX_PRICE, price))
             throw new OrderValueException(price);
     }

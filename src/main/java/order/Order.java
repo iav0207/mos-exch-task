@@ -3,7 +3,7 @@ package order;
 import java.math.BigDecimal;
 
 /**
- * Created by takoe on 13.04.17.
+ * Заявка на покупку или продажу бумаг в количестве {@code amount} по цене {@code price}.
  */
 public abstract class Order {
 
@@ -14,6 +14,15 @@ public abstract class Order {
     Order(Integer amount, BigDecimal price) {
         this.amount = amount;
         this.price = price;
+    }
+
+    /**
+     * Подсчитать сумму сделки по заявке в случае исполнения в полном объёме.
+     * Рассчитывается как ({@code price x amount}).
+     * @return объём сделки в случае исполнения заявки.
+     */
+    public BigDecimal getVolume() {
+        return price.multiply(new BigDecimal(amount));
     }
 
     public Integer getAmount() {

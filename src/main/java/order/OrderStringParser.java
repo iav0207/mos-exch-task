@@ -43,7 +43,8 @@ class OrderStringParser {
     }
 
     private void validate(String s) {
-        if (!orderPattern.matcher(requireNonNull(s)).matches())
+        requireNonNull(s, "Order string should not be null.");
+        if (!orderPattern.matcher(s).matches())
             throw new OrderFormatException(s);
     }
 
