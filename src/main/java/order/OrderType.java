@@ -3,9 +3,6 @@ package order;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- * Created by takoe on 16.04.17.
- */
 public enum OrderType {
 
     BUY('B'),

@@ -7,12 +7,9 @@ import static java.util.Objects.requireNonNull;
 import static order.OrderType.isBuyOrderCode;
 import static order.OrderType.isSellOrderCode;
 
-/**
- * Created by takoe on 16.04.17.
- */
 class OrderStringParser {
 
-    public static final String ORDER_REGEX = "([B,S])\\s+([0-9])+\\s+(?:\\d*\\.)?\\d+";
+    static final String ORDER_REGEX = "([B,S])\\s+([0-9])+\\s+(?:\\d*\\.)?\\d+";
 
     private static final Pattern orderPattern = Pattern.compile(ORDER_REGEX);
 
@@ -28,7 +25,7 @@ class OrderStringParser {
      * @return     новая заявка, {@link Order}.
      * @throws OrderFormatException если формат строки не соответствует ожидаемому.
      */
-    public Order parse(String s) throws OrderFormatException {
+    Order parse(String s) throws OrderFormatException {
 
         validate(s);
         String[] subs = s.split("\\s+", 3);

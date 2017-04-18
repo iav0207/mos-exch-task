@@ -18,7 +18,7 @@ import static java.util.Objects.requireNonNull;
 import static order.OrderType.isBuy;
 
 /**
- * Created by takoe on 16.04.17.
+ * Класс для рассчёта оптимальной цены дискретного аукциона.
  */
 public class OptimalPriceCalculator {
 
@@ -28,19 +28,42 @@ public class OptimalPriceCalculator {
 
     private Multimap<BigDecimal, Order> sellMap = Multimaps.newSetMultimap(new HashMap<>(), HashSet::new);
 
-    private BigDecimal buyingOrdersVolume = BigDecimal.ZERO;
+    private BigDecimal buyOrdersTotalVolume = BigDecimal.ZERO;
 
+    /**
+     * Разместить ордер на покупку или продажу бумаг.
+     *
+     * <p>При добавлении инкрементально подсчитывается суммарный объём размещённых ордеров на покупку.</p>
+     *
+     * <p>Сложность добавления одного элемента: O(log(n)), n - число размещённых ордеров</p>
+     *
+     * @param order заявка на покупку или продажу бумаг, {@link Order}.
+     */
     public void place(@Nonnull Order order) {
         requireNonNull(order, "Order should not be null.");
         BigDecimal price = order.getPrice();
+
         prices.add(price);
         getCorrespondingMap(order).put(price, order);
+
         if (isBuy(order))
-            buyingOrdersVolume = buyingOrdersVolume.add(order.getVolume());
+            buyOrdersTotalVolume = buyOrdersTotalVolume.add(order.getVolume());
     }
 
+    /**
+     * Рассчитать оптимальную цену аукциона для размещённых ордеров на данный момент.
+     * <p>
+     * Итерирование по ценам ордеров, а также по ценам, лежащим посередине между ними.<br/>
+     * Для каждого значения цены инкрементально определяется суммарный объём возможных сделок.<br/>
+     * Возвращаются значения цены и объёма торгуемых бумаг (одна пара значений), для которых объём сделок максимальный.
+     * </p>
+     * <p>Сложность: O(n).</p>
+     *
+     * @return Объект {@link Result}, содержащий оптимальную цену аукциона,
+     * а также количество торгуемых бумаг для этой цены.
+     */
     public Result calculate() {
-        BigDecimal curBuyVolume = buyingOrdersVolume;
+        BigDecimal curBuyVolume = buyOrdersTotalVolume;
         BigDecimal curSellVolume = BigDecimal.ZERO;
         BigDecimal maxTradeVolume = BigDecimal.ZERO;
         BigDecimal optimalPrice = null;
@@ -70,6 +93,7 @@ public class OptimalPriceCalculator {
 
     /**
      * Оптимальными могут быть цены, по которым размещены заявки, а также средние значения между ними.
+     *
      * @return Набор цен, по которым следует итерироваться в поисках оптимальной цены.
      */
     private Set<BigDecimal> buildPricesSetToIterateThrough() {

@@ -7,9 +7,6 @@ import java.math.BigDecimal;
 
 import static org.testng.Assert.assertEquals;
 
-/**
- * Created by takoe on 16.04.17.
- */
 public class OrderFactoryTest {
 
     private OrderFactory factory = new OrderFactory();

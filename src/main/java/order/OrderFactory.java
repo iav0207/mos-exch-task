@@ -5,7 +5,12 @@ import java.math.BigDecimal;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Фабрика заявок с валидацией значений.
+ * <p>Фабрика заявок с валидацией значений.</p>
+ *
+ * Ограничения:<br/>
+ * <li>Цена бумаги дискретна с точностью до 1 коп. в диапазоне от 1 до 100 руб. включительно.</li>
+ * <li>Количество заявок от 0 до 1 миллиона.</li>
+ * <li>Количество бумаг в заявке от {@value MIN_ORDER_AMOUNT} до {@value MAX_ORDER_AMOUNT} включительно.</li>
  */
 class OrderFactory {
 
@@ -38,7 +43,7 @@ class OrderFactory {
      * @return          {@link BuyOrder}, новая заявка на покупку.
      * @throws OrderValueException в случае, если значения не прошли валидацию.
      */
-    public BuyOrder buy(Integer amount, BigDecimal price) throws OrderValueException {
+    BuyOrder buy(Integer amount, BigDecimal price) throws OrderValueException {
         validate(amount, price);
         return new BuyOrder(amount, round(price));
     }
@@ -52,7 +57,7 @@ class OrderFactory {
      * @return          {@link BuyOrder}, новая заявка на продажу.
      * @throws OrderValueException в случае, если значения не прошли валидацию.
      */
-    public SellOrder sell(Integer amount, BigDecimal price) throws OrderValueException {
+    SellOrder sell(Integer amount, BigDecimal price) throws OrderValueException {
         validate(amount, price);
         return new SellOrder(amount, round(price));
     }

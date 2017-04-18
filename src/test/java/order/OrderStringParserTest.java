@@ -16,9 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.fail;
 
-/**
- * Created by takoe on 16.04.17.
- */
 public class OrderStringParserTest {
 
     @InjectMocks

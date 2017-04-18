@@ -4,9 +4,6 @@ import order.OrderFormatException;
 import order.OrderValueException;
 import order.Orders;
 
-/**
- * Created by takoe on 16.04.17.
- */
 public class DiscreteAuction {
 
     public static void main(String... args) {

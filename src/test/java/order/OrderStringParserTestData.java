@@ -2,9 +2,6 @@ package order;
 
 import org.testng.annotations.DataProvider;
 
-/**
- * Created by takoe on 16.04.17.
- */
 public class OrderStringParserTestData {
 
     @DataProvider(name = "valid")

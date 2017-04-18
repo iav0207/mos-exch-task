@@ -12,9 +12,6 @@ import static order.Orders.buy;
 import static order.Orders.sell;
 import static org.testng.Assert.assertEquals;
 
-/**
- * Created by takoe on 18.04.17.
- */
 public class OptimalPriceCalculatorTest {
 
     private OptimalPriceCalculator calculator;
