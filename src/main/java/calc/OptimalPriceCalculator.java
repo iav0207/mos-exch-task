@@ -70,12 +70,12 @@ public class OptimalPriceCalculator {
 
         for (BigDecimal price : buildPricesSetToIterateThrough()) {
 
-            BigDecimal buyIncrement = countVolumesTotal(buyMap.get(price));
+            BigDecimal buyDecrement = countVolumesTotal(buyMap.get(price));
             BigDecimal sellIncrement = countVolumesTotal(sellMap.get(price));
 
             curSellVolume = curSellVolume.add(sellIncrement);
             BigDecimal curTradeVolume = curBuyVolume.min(curSellVolume);    // возможный объём сделок для текущей цены
-            curBuyVolume = curBuyVolume.subtract(buyIncrement);
+            curBuyVolume = curBuyVolume.subtract(buyDecrement);
 
             if (less(maxTradeVolume, curTradeVolume)) {
                 maxTradeVolume = curTradeVolume;
