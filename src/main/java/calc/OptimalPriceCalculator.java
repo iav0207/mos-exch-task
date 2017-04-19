@@ -27,7 +27,7 @@ public class OptimalPriceCalculator {
 
     private Multimap<BigDecimal, Order> sellMap = Multimaps.newSetMultimap(new HashMap<>(), HashSet::new);
 
-    private BigDecimal buyOrdersTotalVolume = BigDecimal.ZERO;
+    private Integer buyOrdersTotalAmount = 0;
 
     /**
      * Разместить ордер на покупку или продажу бумаг.
@@ -46,7 +46,7 @@ public class OptimalPriceCalculator {
         getCorrespondingMap(order).put(price, order);
 
         if (isBuy(order))
-            buyOrdersTotalVolume = buyOrdersTotalVolume.add(order.getVolume());
+            buyOrdersTotalAmount += order.getAmount();
     }
 
     /**
@@ -63,27 +63,27 @@ public class OptimalPriceCalculator {
      * а также количество торгуемых бумаг для этой цены.
      */
     public Result calculate() {
-        BigDecimal curBuyVolume = buyOrdersTotalVolume;
-        BigDecimal curSellVolume = BigDecimal.ZERO;
-        BigDecimal maxTradeVolume = BigDecimal.ZERO;
+        Integer curBuyAmount = buyOrdersTotalAmount;
+        Integer curSellAmount = 0;
+        Integer maxTradeVolume = 0;
 
         final Set<BigDecimal> potentialOptimalPrices = new HashSet<>();
 
         for (BigDecimal price : prices) {
 
-            BigDecimal buyDecrement = countVolumesTotal(buyMap.get(price));
-            BigDecimal sellIncrement = countVolumesTotal(sellMap.get(price));
+            Integer buyDecrement = getTotalAmount(buyMap.get(price));
+            Integer sellIncrement = getTotalAmount(sellMap.get(price));
 
-            curSellVolume = curSellVolume.add(sellIncrement);
-            BigDecimal curTradeVolume = curBuyVolume.min(curSellVolume);    // возможный объём сделок для текущей цены
-            curBuyVolume = curBuyVolume.subtract(buyDecrement);
+            curSellAmount += sellIncrement;
+            Integer curTradeVolume = Math.min(curBuyAmount, curSellAmount); // возможный объём сделок для текущей цены
+            curBuyAmount -= buyDecrement;
 
-            if (less(maxTradeVolume, curTradeVolume)) {
+            if (maxTradeVolume < curTradeVolume) {
                 maxTradeVolume = curTradeVolume;
                 potentialOptimalPrices.clear();
                 potentialOptimalPrices.add(price);
 
-            } else if (curTradeVolume.equals(maxTradeVolume) && less(BigDecimal.ZERO, curTradeVolume)) {
+            } else if (curTradeVolume.equals(maxTradeVolume) && curTradeVolume > 0) {
                 potentialOptimalPrices.add(price);
             }
         }
@@ -97,10 +97,8 @@ public class OptimalPriceCalculator {
         return isBuy(order) ? buyMap : sellMap;
     }
 
-    private static BigDecimal countVolumesTotal(@Nonnull Collection<Order> orders) {
-        return orders.stream()
-                .map(Order::getVolume)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    private static Integer getTotalAmount(@Nonnull Collection<Order> orders) {
+        return orders.stream().mapToInt(Order::getAmount).sum();
     }
 
     @Nullable
@@ -113,17 +111,12 @@ public class OptimalPriceCalculator {
                 .divide(new BigDecimal(prices.size()), 2, BigDecimal.ROUND_UP);
     }
 
-    private static boolean less(@Nonnull BigDecimal first, BigDecimal second) {
-        return first.compareTo(second) < 0;
-    }
-
     @Nonnull
-    private static Result result(@Nonnull BigDecimal maxTradeVolume, @Nullable BigDecimal optimalPrice) {
-        if (optimalPrice == null) {
+    private static Result result(@Nonnull Integer maxTradeVolume, @Nullable BigDecimal optimalPrice) {
+        if (maxTradeVolume == 0 || optimalPrice == null) {
             return Result.auctionFailed();
         }
-        Integer amount = maxTradeVolume.divide(optimalPrice, 0, BigDecimal.ROUND_DOWN).intValue();
-        return new Result(amount, optimalPrice);
+        return new Result(maxTradeVolume, optimalPrice);
     }
 
     static class Result {
@@ -131,17 +124,13 @@ public class OptimalPriceCalculator {
         private Integer amount;
         private BigDecimal price;
 
-        Result() {
-            this(0, null);
-        }
-
         Result(Integer amount, BigDecimal price) {
             this.amount = amount;
             this.price = price;
         }
 
         static Result auctionFailed() {
-            return new Result();
+            return new Result(0, null);
         }
 
         @Override

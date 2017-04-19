@@ -71,8 +71,21 @@ public class OptimalPriceCalculatorTestData {
                                 sell(1, new BigDecimal("20.00")),
                                 sell(1, new BigDecimal("30.00"))
                         ),
-                        "1 25.00"   // случай с усреднением двух корректных оптимальных цен
+                        "2 20.00"
                 },
+                {
+                        Arrays.asList(
+                                buy(1, new BigDecimal("10.00")),
+                                buy(1, new BigDecimal("20.00")),
+                                buy(1, new BigDecimal("29.50")),
+                                buy(1, new BigDecimal("31.00")),
+                                sell(1, new BigDecimal("10.00")),
+                                sell(1, new BigDecimal("20.00")),
+                                sell(1, new BigDecimal("30.00")),
+                                sell(1, new BigDecimal("32.00"))
+                        ),
+                        "2 24.75"   // случай с усреднением двух корректных оптимальных цен
+                }
         };
     }
 

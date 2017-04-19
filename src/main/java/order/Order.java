@@ -16,15 +16,6 @@ public abstract class Order {
         this.price = price;
     }
 
-    /**
-     * Подсчитать сумму сделки по заявке в случае исполнения в полном объёме.
-     * Рассчитывается как ({@code price x amount}).
-     * @return объём сделки в случае исполнения заявки.
-     */
-    public BigDecimal getVolume() {
-        return price.multiply(new BigDecimal(amount));
-    }
-
     public Integer getAmount() {
         return amount;
     }
