@@ -18,6 +18,9 @@ import static order.OrderType.isBuy;
 
 /**
  * Класс для рассчёта оптимальной цены дискретного аукциона.
+ *
+ * Оптимальной считается любая корректная цена, которая максимизирует объем совершаемых сделок,
+ * т.е. общее количество проданных, а значит и купленных бумаг.
  */
 public class OptimalPriceCalculator {
 
@@ -59,8 +62,7 @@ public class OptimalPriceCalculator {
      * </p>
      * <p>Сложность: O(n).</p>
      *
-     * @return Объект {@link Result}, содержащий оптимальную цену аукциона,
-     * а также количество торгуемых бумаг для этой цены.
+     * @return Объект {@link Result}, содержащий оптимальную цену аукциона, а также объём сделок по этой цене.
      */
     public Result calculate() {
         Integer curBuyAmount = buyOrdersTotalAmount;
