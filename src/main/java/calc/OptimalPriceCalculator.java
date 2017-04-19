@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -53,9 +52,10 @@ public class OptimalPriceCalculator {
     /**
      * Рассчитать оптимальную цену аукциона для размещённых ордеров на данный момент.
      * <p>
-     * Итерирование по ценам ордеров, а также по ценам, лежащим посередине между ними.<br/>
      * Для каждого значения цены инкрементально определяется суммарный объём возможных сделок.<br/>
      * Возвращаются значения цены и объёма торгуемых бумаг (одна пара значений), для которых объём сделок максимальный.
+     * В случае, когда несколько корректных цен удовлетворяют этому критерию,
+     * возвращается среднее арифметическое всех таких цен с округлением вверх до целых копеек.
      * </p>
      * <p>Сложность: O(n).</p>
      *
@@ -66,9 +66,10 @@ public class OptimalPriceCalculator {
         BigDecimal curBuyVolume = buyOrdersTotalVolume;
         BigDecimal curSellVolume = BigDecimal.ZERO;
         BigDecimal maxTradeVolume = BigDecimal.ZERO;
-        BigDecimal optimalPrice = null;
 
-        for (BigDecimal price : buildPricesSetToIterateThrough()) {
+        final Set<BigDecimal> potentialOptimalPrices = new HashSet<>();
+
+        for (BigDecimal price : prices) {
 
             BigDecimal buyDecrement = countVolumesTotal(buyMap.get(price));
             BigDecimal sellIncrement = countVolumesTotal(sellMap.get(price));
@@ -79,10 +80,15 @@ public class OptimalPriceCalculator {
 
             if (less(maxTradeVolume, curTradeVolume)) {
                 maxTradeVolume = curTradeVolume;
-                optimalPrice = price;
+                potentialOptimalPrices.clear();
+                potentialOptimalPrices.add(price);
+
+            } else if (curTradeVolume.equals(maxTradeVolume) && less(BigDecimal.ZERO, curTradeVolume)) {
+                potentialOptimalPrices.add(price);
             }
         }
 
+        BigDecimal optimalPrice = getSingleOptimalPrice(potentialOptimalPrices);
         return result(maxTradeVolume, optimalPrice);
     }
 
@@ -91,30 +97,20 @@ public class OptimalPriceCalculator {
         return isBuy(order) ? buyMap : sellMap;
     }
 
-    /**
-     * Оптимальными могут быть цены, по которым размещены заявки, а также средние значения между ними.
-     *
-     * @return Набор цен, по которым следует итерироваться в поисках оптимальной цены.
-     */
-    private Set<BigDecimal> buildPricesSetToIterateThrough() {
-        Set<BigDecimal> pricesToIterate = new TreeSet<>(prices);
-        Iterator<BigDecimal> iterator = prices.iterator();
-        if (!iterator.hasNext())
-            return pricesToIterate;
-        BigDecimal prev = iterator.next();
-        while (iterator.hasNext()) {
-            BigDecimal cur = iterator.next();
-            BigDecimal avg = prev.add(cur).divide(new BigDecimal(2), 2, BigDecimal.ROUND_UP);
-            pricesToIterate.add(avg);
-            prev = cur;
-        }
-        return pricesToIterate;
-    }
-
     private static BigDecimal countVolumesTotal(@Nonnull Collection<Order> orders) {
         return orders.stream()
                 .map(Order::getVolume)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Nullable
+    private static BigDecimal getSingleOptimalPrice(@Nonnull Collection<BigDecimal> prices) {
+        if (prices.isEmpty()) {
+            return null;
+        }
+        return prices.stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(new BigDecimal(prices.size()), 2, BigDecimal.ROUND_UP);
     }
 
     private static boolean less(@Nonnull BigDecimal first, BigDecimal second) {

@@ -35,10 +35,10 @@ public class OptimalPriceCalculatorTest {
     public void testPerformance() {
         long tic = now();
         largeSet().forEach(calculator::place);
-        System.out.println(calculator.calculate());
+        OptimalPriceCalculator.Result result = calculator.calculate();
         long toc = now();
 
-        System.out.printf("Time elapsed: %d ms\n", (toc - tic));
+        System.out.printf("Result:\t%s\nTime elapsed: %d ms\n", result, (toc - tic));
     }
 
     private static long now() {
