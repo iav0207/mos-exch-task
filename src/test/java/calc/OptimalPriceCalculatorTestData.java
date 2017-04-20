@@ -21,16 +21,16 @@ public class OptimalPriceCalculatorTestData {
         return new Object[][]{
                 {
                         Arrays.asList(
-                                buy(100, new BigDecimal("10.00")),
-                                sell(150, new BigDecimal("10.10"))
+                                buy(100, price("10.00")),
+                                sell(150, price("10.10"))
                         ),
                         "0 n/a"
                 },
                 {
                         Arrays.asList(
-                                buy(100, new BigDecimal("15.40")),
-                                buy(100, new BigDecimal("15.30")),
-                                sell(150, new BigDecimal("15.30"))
+                                buy(100, price("15.40")),
+                                buy(100, price("15.30")),
+                                sell(150, price("15.30"))
                         ),
                         "150 15.30"
                 }
@@ -42,47 +42,47 @@ public class OptimalPriceCalculatorTestData {
         return new Object[][] {
                 {
                         Arrays.asList(
-                                buy(1, new BigDecimal("10.00")),
-                                sell(1, new BigDecimal("10.01"))
+                                buy(1, price("10.00")),
+                                sell(1, price("10.01"))
                         ),
                         "0 n/a"
                 },
                 {
                         Arrays.asList(
-                                buy(1, new BigDecimal("10.00")),
-                                sell(1, new BigDecimal("10.00"))
+                                buy(1, price("10.00")),
+                                sell(1, price("10.00"))
                         ),
                         "1 10.00"
                 },
                 {
                         Arrays.asList(
-                                buy(300, new BigDecimal("10.00")),
-                                sell(1, new BigDecimal("10.00")),
-                                sell(1, new BigDecimal("10.00"))
+                                buy(300, price("10.00")),
+                                sell(1, price("10.00")),
+                                sell(1, price("10.00"))
                         ),
                         "2 10.00"
                 },
                 {
                         Arrays.asList(
-                                buy(1, new BigDecimal("10.00")),
-                                buy(1, new BigDecimal("20.00")),
-                                buy(1, new BigDecimal("30.00")),
-                                sell(1, new BigDecimal("10.00")),
-                                sell(1, new BigDecimal("20.00")),
-                                sell(1, new BigDecimal("30.00"))
+                                buy(1, price("10.00")),
+                                buy(1, price("20.00")),
+                                buy(1, price("30.00")),
+                                sell(1, price("10.00")),
+                                sell(1, price("20.00")),
+                                sell(1, price("30.00"))
                         ),
                         "2 20.00"
                 },
                 {
                         Arrays.asList(
-                                buy(1, new BigDecimal("10.00")),
-                                buy(1, new BigDecimal("20.00")),
-                                buy(1, new BigDecimal("29.50")),
-                                buy(1, new BigDecimal("31.00")),
-                                sell(1, new BigDecimal("10.00")),
-                                sell(1, new BigDecimal("20.00")),
-                                sell(1, new BigDecimal("30.00")),
-                                sell(1, new BigDecimal("32.00"))
+                                buy(1, price("10.00")),
+                                buy(1, price("20.00")),
+                                buy(1, price("29.50")),
+                                buy(1, price("31.00")),
+                                sell(1, price("10.00")),
+                                sell(1, price("20.00")),
+                                sell(1, price("30.00")),
+                                sell(1, price("32.00"))
                         ),
                         "2 24.75"   // случай с усреднением двух корректных оптимальных цен
                 }
@@ -101,6 +101,10 @@ public class OptimalPriceCalculatorTestData {
 
     private static int intFromOneTo(int endInclusive) {
         return 1 + random.nextInt(endInclusive - 1);
+    }
+
+    private static BigDecimal price(String s) {
+        return new BigDecimal(s);
     }
 
 }
